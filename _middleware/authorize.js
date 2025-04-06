@@ -1,6 +1,6 @@
-const jwt = require('express-jwt');
-const { secret } = require('config.json');
-const db = require('_helpers/db');
+const jwt = require('jsonwebtoken');
+const { secret } = require('../config.json');
+const db = require('../_helpers/db');
 
 module.exports = authorize;
 
@@ -13,22 +13,47 @@ function authorize(roles = []) {
 
     return [
         // authenticate JWT token and attach user to request object (req.user)
-        jwt({ secret, algorithms: ['HS256'] }),
-    
+        (req, res, next) => {
+            // Get token from header
+            const token = req.header('Authorization')?.replace('Bearer ', '');
+            
+            if (!token) {
+                return res.status(401).json({ message: 'No token provided' });
+            }
+
+            // Verify token
+            jwt.verify(token, secret, { algorithms: ['HS256'] }, (err, decoded) => {
+                if (err) {
+                    return res.status(401).json({ message: 'Invalid token' });
+                }
+                req.user = decoded;
+                next();
+            });
+        },
+
         // authorize based on user role
         async (req, res, next) => {
-            const account = await db.Account.findByPk(req.user.id);
-    
-            if (!account || (roles.length && !roles.includes(account.role))) {
-                // account no longer exists or role not authorized
-                return res.status(401).json({ message: 'Unauthorized' });
+            try {
+                const account = await db.Account.findByPk(req.user.id);
+                
+                if (!account) {
+                    return res.status(401).json({ message: 'Account not found' });
+                }
+
+                if (roles.length && !roles.includes(account.role)) {
+                    return res.status(403).json({ message: 'Forbidden - Insufficient permissions' });
+                }
+
+                // Check refresh tokens if needed
+                const refreshTokens = await account.getRefreshTokens();
+                req.user.ownsToken = !!refreshTokens.find(x => x.token === req.header('Authorization')?.replace('Bearer ', ''));
+                
+                // Attach account role to request
+                req.user.role = account.role;
+                next();
+            } catch (error) {
+                next(error);
             }
-    
-            // authentication and authorization successful
-            req.user.role = account.role;
-            const refreshTokens = await account.getRefreshTokens();
-            req.user.ownsToken = !!refreshTokens.find(x => x.token === token);
-            next();
         }
     ];
 }
