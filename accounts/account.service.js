@@ -97,6 +97,7 @@ async function register(params, origin) {
 
     // send email
     await sendVerificationEmail(account, origin);
+    
 }
 
 async function verifyEmail({ token }) {
