@@ -77,27 +77,33 @@ async function revokeToken({ token, ipAddress }) {
 }
 
 async function register(params, origin) {
-    // validate
+    // Validate if the email is already registered
     if (await db.Account.findOne({ where: { email: params.email } })) {
-        // send already registered error in email to prevent account enumeration
         return await sendAlreadyRegisteredEmail(params.email, origin);
     }
-    // create account object
+
+    // Create account object
     const account = new db.Account(params);
-    // first registered account is an admin
+    account.role = (await db.Account.count()) === 0 ? Role.Admin : Role.User;
+    account.verificationToken = randomTokenString();
+
     const isFirstAccount = (await db.Account.count()) === 0;
     account.role = isFirstAccount ? Role.Admin : Role.User;
     account.verificationToken = randomTokenString();
+    
+    // Hash password
+    if (params.password) {
+        account.passwordHash = bcrypt.hashSync(params.password, 10);
+    }
 
-    // hash password
-    account.passwordHash = await hash(params.password);
-
-    // save account
+    // Save account
     await account.save();
 
-    // send email
+    // Send verification email
     await sendVerificationEmail(account, origin);
-    
+
+    // Return the account object (including the verification token)
+    return account;
 }
 
 async function verifyEmail({ token }) {

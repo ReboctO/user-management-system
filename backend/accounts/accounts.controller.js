@@ -7,7 +7,7 @@ const Role = require('_helpers/role');
 const accountService = require('accounts/account.service');
 
 // routes
-router.post('/authenticate', authenticateSchema, authenticate);
+router.post('/login', authenticateSchema, login);
 router.post('/refresh-token', refreshToken);
 router.post('/revoke-token', authorize(), revokeTokenSchema, revokeToken);
 router.post('/register', registerSchema, register);
@@ -15,11 +15,12 @@ router.post('/verify-email', verifyEmailSchema, verifyEmail);
 router.post('/forgot-password', forgotPasswordSchema, forgotPassword);
 router.post('/validate-reset-token', validateResetTokenSchema, validateResetToken);
 router.post('/reset-password', resetPasswordSchema, resetPassword);
+router.post('/logout', authorize(), logout);
 router.get('/', authorize(Role.Admin), getAll);
 router.get('/:id', authorize(), getById);
 router.post('/', authorize(Role.Admin), createSchema, create);
 router.put('/:id', authorize(), updateSchema, update);
-router.delete('/:id', authorize(), _delete);
+router.delete('/:id', authorize(), _delete); 
 
 module.exports = router;
 
@@ -31,15 +32,16 @@ function authenticateSchema(req, res, next) {
     validateRequest(req, next, schema);
 }
 
-function authenticate(req, res, next) {
+function login(req, res, next) {
     const { email, password } = req.body;
     const ipAddress = req.ip;
+
     accountService.authenticate({ email, password, ipAddress })
         .then(({ refreshToken, ...account }) => {
-            setTokenCookie(res, refreshToken);
-            res.json(account);
+            setTokenCookie(res, refreshToken); // Set refresh token in a cookie
+            res.json(account); // Return account details and JWT token
         })
-        .catch(next);
+        .catch(next); // Handle errors
 }
 
 function refreshToken(req, res, next) {
@@ -92,8 +94,9 @@ function registerSchema(req, res, next) {
 
 function register(req, res, next) {
     accountService.register(req.body, req.get('origin'))
-        .then(() => res.json({ 
-            message: 'Registration successful, please check your email for verification instructions' 
+        .then(account => res.json({ 
+            message: 'Registration successful, please check your email for verification instructions',
+            verificationToken: account.verificationToken // Include the token in the response
         }))
         .catch(next);
 }
@@ -150,6 +153,22 @@ function resetPassword(req, res, next) {
     accountService.resetPassword(req.body)
         .then(() => res.json({ message: 'Password reset successful, you can now login' }))
         .catch(next);
+}
+
+function logout(req, res, next) {
+    const token = req.cookies.refreshToken; // Get refresh token from cookies
+    const ipAddress = req.ip;
+
+    if (!token) {
+        return res.status(400).json({ message: 'Refresh token is required for logout' });
+    }
+
+    accountService.revokeToken({ token, ipAddress }) // Revoke the token in the backend
+        .then(() => {
+            res.clearCookie('refreshToken'); // Clear the refresh token cookie
+            res.json({ message: 'Logout successful' });
+        })
+        .catch(next); // Handle errors
 }
 
 function getAll(req, res, next) {
