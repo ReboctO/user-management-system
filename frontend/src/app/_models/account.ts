@@ -14,6 +14,7 @@ export class Account {
     password?: string;
     resetToken?: string; 
     resetTokenExpires?: string;
+    isActive?: boolean;
 
     constructor() {
         this.refreshTokens = []; 

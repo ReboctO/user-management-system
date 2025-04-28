@@ -7,7 +7,7 @@ const Role = require('_helpers/role');
 const accountService = require('accounts/account.service');
 
 // routes
-router.post('/login', authenticateSchema, login);
+router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/refresh-token', refreshToken);
 router.post('/revoke-token', authorize(), revokeTokenSchema, revokeToken);
 router.post('/register', registerSchema, register);
@@ -15,11 +15,11 @@ router.post('/verify-email', verifyEmailSchema, verifyEmail);
 router.post('/forgot-password', forgotPasswordSchema, forgotPassword);
 router.post('/validate-reset-token', validateResetTokenSchema, validateResetToken);
 router.post('/reset-password', resetPasswordSchema, resetPassword);
-router.post('/logout', authorize(), logout);
 router.get('/', authorize(Role.Admin), getAll);
 router.get('/:id', authorize(), getById);
 router.post('/', authorize(Role.Admin), createSchema, create);
 router.put('/:id', authorize(), updateSchema, update);
+router.put('/:id/toggle-status', authorize(Role.Admin), toggleAccountStatus);
 router.delete('/:id', authorize(), _delete); 
 
 module.exports = router;
@@ -32,7 +32,7 @@ function authenticateSchema(req, res, next) {
     validateRequest(req, next, schema);
 }
 
-function login(req, res, next) {
+function authenticate(req, res, next) {
     const { email, password } = req.body;
     const ipAddress = req.ip;
 
@@ -256,4 +256,13 @@ function setTokenCookie(res, token) {
         expires: new Date(Date.now() + 7*24*60*60*1000)
     };
     res.cookie('refreshToken', token, cookieOptions);
+}
+
+function toggleAccountStatus(req, res, next) {
+    const accountId = req.params.id;
+    const { isActive } = req.body;
+    
+    accountService.toggleAccountStatus(accountId, isActive)
+        .then(() => res.json({ message: `Account ${isActive ? 'activated' : 'deactivated'} successfully` }))
+        .catch(next);
 }

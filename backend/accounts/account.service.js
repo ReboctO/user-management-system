@@ -20,17 +20,22 @@ module.exports = {
     getById,
     create,
     update,
-    delete: _delete
+    delete: _delete,
+    toggleAccountStatus
 };
 
 async function authenticate({ email, password, ipAddress }) {
     const account = await db.Account.scope('withHash').findOne({ where: { email } });
 
-    if (!account || !account.isVerified || !await bcrypt.compare(password, account.passwordHash)) {
+    if (!account || !bcrypt.compareSync(password, account.passwordHash)) {
         throw 'Email or password is incorrect';
     }
 
-    // authentication successful so generate jwt and refresh tokens
+    if (!account.isActive) {
+        throw 'Account is deactivated. Please contact administrator.';
+    }
+
+    // Generate tokens
     const jwtToken = generateJwtToken(account);
     const refreshToken = generateRefreshToken(account, ipAddress);
 
@@ -79,38 +84,37 @@ async function revokeToken({ token, ipAddress }) {
 async function register(params, origin) {
     // Validate if the email is already registered
     if (await db.Account.findOne({ where: { email: params.email } })) {
-        return await sendAlreadyRegisteredEmail(params.email, origin);
+        throw 'Email "' + params.email + '" is already registered';
     }
 
-    // Create account object
+    // create account object
     const account = new db.Account(params);
-    account.role = (await db.Account.count()) === 0 ? Role.Admin : Role.User;
-    account.verificationToken = randomTokenString();
 
+    // first registered account is an admin
     const isFirstAccount = (await db.Account.count()) === 0;
     account.role = isFirstAccount ? Role.Admin : Role.User;
-    account.verificationToken = randomTokenString();
     
-    // Hash password
-    if (params.password) {
-        account.passwordHash = bcrypt.hashSync(params.password, 10);
-    }
+    // Generate token and auto-verify immediately
+    const token = randomTokenString();
+    account.verificationToken = token;
+    account.verified = Date.now();
+    
+    // hash password
+    account.passwordHash = bcrypt.hashSync(params.password, 10);
 
-    // Save account
+    // save account
     await account.save();
 
-    // Send verification email
-    await sendVerificationEmail(account, origin);
+    // Auto-verify the account
+    await verifyEmail({ token });
 
-    // Return the account object (including the verification token)
     return account;
 }
 
 async function verifyEmail({ token }) {
     const account = await db.Account.findOne({ where: { verificationToken: token } });
-
     if (!account) throw 'Verification failed';
-
+    
     account.verified = Date.now();
     account.verificationToken = null;
     await account.save();
@@ -199,6 +203,13 @@ async function update(id, params) {
 async function _delete(id) {
     const account = await getAccount(id);
     await account.destroy();
+}
+
+async function toggleAccountStatus(id, isActive) {
+    const account = await getAccount(id);
+    account.isActive = isActive;
+    await account.save();
+    return basicDetails(account);
 }
 
 // helper functions

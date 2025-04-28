@@ -102,6 +102,10 @@ export class AccountService {
       }));
   }
 
+  toggleAccountStatus(id: string, isActive: boolean) {
+    return this.http.put(`${baseUrl}/${id}/toggle-status`, { isActive });
+  }
+
   private refreshTokenTimeout: any;
 
   private startRefreshTokenTimer() {
