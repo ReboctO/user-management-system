@@ -12,7 +12,7 @@ app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: 
 
 app.get('/accounts/verify-email', (req, res) => {
     const token = req.query.token;
-    const origin = req.query.origin || 'http://localhost:4200';
+    const origin = req.query.origin || 'http://localhost:4000';
     
     if (!token) return res.status(400).send('Token is required');
     
