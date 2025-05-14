@@ -4,16 +4,16 @@
     "port": 3306,
     "user": "root",
     "password": "",
-    "database": "node-mysql-signup-verification-api"
+    "database": "user_management_db"
   },
-  "secret": "8ecd6cfc-1cd0-dbd4-ae6e-5b6dbaddaa23",
-  "emailFrom": "info@node-mysql-signup-verification-api.com",
-  "smtpOptions": {
-    "host": "smtp.ethereal.email",
-    "port": 587,
-    "auth": {
-      "user": "maryse.dooley73@ethereal.email",
-      "pass": "jGB6uJ4KnaMwQ72rKf"
+        "secret": "TcxtoIgRRbUqqgW174x1zAA==",
+        "emailFrom": "info@node-mysql-signup-verification-api.com",
+        "smtpOptions": {  
+        "host": "smtp.ethereal.email",
+        "port": 587,
+        "auth": {
+        "user": "ladarius66@ethereal.email",
+        "pass": "HaCUhbSy1XEmTpTExr"
+        }
+        }
     }
-  }
-}

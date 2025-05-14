@@ -1,28 +1,99 @@
-const config = require('config.json');
+const config = require('../config.json');
 const mysql = require('mysql2/promise');
-const Sequelize = require('sequelize');
+const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
 module.exports = db = {};
 
 initialize();
 
 async function initialize() {
-    // create db if it doesn't already exist
-    const { host, port, user, password, database } = config.database;
-    const connection = await mysql.createConnection({ host, port, user, password });
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
+    // Load database configuration
+    const dbConfig = {
+        host: process.env.DB_HOST || config.database.host || 'localhost',
+        port: process.env.DB_PORT || config.database.port || 3306,
+        user: process.env.DB_USER || config.database.user || 'root',
+        password: process.env.DB_PASSWORD || config.database.password || '',
+        database: process.env.DB_NAME || config.database.database || 'user_management_db'
+    };
 
-    // connect to db
-    const sequelize = new Sequelize(database, user, password, { dialect: 'mysql' });
+    // Step 1: Create database if it doesn't exist
+    try {
+        const connection = await mysql.createConnection({
+            host: dbConfig.host,
+            port: dbConfig.port,
+            user: dbConfig.user,
+            password: dbConfig.password
+        });
 
-    // init models and add them to the exported db object
+        console.log('Connected to MySQL server');
+        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\`;`);
+        await connection.end();
+        console.log(`Database '${dbConfig.database}' ensured.`);
+    } catch (err) {
+        console.error('❌ Database connection failed:', err.message);
+        return;
+    }
+
+    // Step 2: Initialize Sequelize
+    const sequelize = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.password, {
+        host: dbConfig.host,
+        port: dbConfig.port,
+        dialect: 'mysql',
+        logging: false, // Set to true to enable SQL logging
+        pool: {
+            max: 5,
+            min: 0,
+            acquire: 30000,
+            idle: 10000
+        }
+    });
+
+    // Step 3: Test Sequelize connection
+    try {
+        await sequelize.authenticate();
+        console.log('✅ Sequelize connection established successfully.');
+    } catch (error) {
+        console.error('❌ Unable to connect to the database via Sequelize:', error.message);
+        return;
+    }
+
+    // Step 4: Define models
     db.Account = require('../accounts/account.model')(sequelize);
     db.RefreshToken = require('../accounts/refresh-token.model')(sequelize);
+    db.Employee = require('../employees/employee.model')(sequelize);
+    db.Department = require('../departments/department.model')(sequelize);
+    db.Workflow = require('../workflows/workflow.model')(sequelize);
+    db.Request = require('../requests/request.model')(sequelize);
+    db.RequestItem = require('../requests/request-item.model')(sequelize);
 
-    // define relationships
+    // Step 5: Define relationships
     db.Account.hasMany(db.RefreshToken, { onDelete: 'CASCADE' });
     db.RefreshToken.belongsTo(db.Account);
 
-    // sync all models with database
-    await sequelize.sync({ alter: true });
+    db.Account.hasOne(db.Employee);
+    db.Employee.belongsTo(db.Account);
+
+    db.Department.hasMany(db.Employee);
+    db.Employee.belongsTo(db.Department);
+
+    db.Employee.hasMany(db.Workflow);
+    db.Workflow.belongsTo(db.Employee);
+
+    db.Employee.hasMany(db.Request);
+    db.Request.belongsTo(db.Employee);
+
+    db.Request.hasMany(db.RequestItem, { onDelete: 'CASCADE' });
+    db.RequestItem.belongsTo(db.Request);
+
+    // Step 6: Sync models with DB
+    try {
+        await sequelize.sync({ alter: true });
+        console.log('✅ Database models synchronized successfully.');
+    } catch (syncError) {
+        console.error('❌ Error synchronizing database models:', syncError.message);
+    }
+
+    // Export sequelize for use elsewhere if needed
+    db.sequelize = sequelize;
 }
