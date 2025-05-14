@@ -114,15 +114,26 @@ async function revokeToken({token, ipAddress}) {
 
 async function register(params, origin) {
     if (await db.Account.findOne({ where: { email: params.email } }) ) {
-    return await sendAlreadyRegisteredEmail(params.email, origin);
+        return await sendAlreadyRegisteredEmail(params.email, origin);
     }
     const account = new db.Account(params);
     const isFirstAccount = (await db.Account.count()) === 0;
     account.role = isFirstAccount ? Role.Admin : Role.User;
     account.verificationToken = randomTokenString();
     account.passwordHash = await hash(params.password);
-    await account.save();
-    await sendVerificationEmail(account, origin);
+    
+    try {
+        await account.save();
+        try {
+            await sendVerificationEmail(account, origin);
+        } catch (emailError) {
+            console.error('Failed to send verification email:', emailError);
+            // Continue registration even if email fails
+        }
+    } catch (error) {
+        console.error('Account registration failed:', error);
+        throw 'Registration failed. Please try again later.';
+    }
 }
 
 async function verifyEmail({ token }) {

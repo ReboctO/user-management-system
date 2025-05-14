@@ -9,8 +9,9 @@
   "secret": "TcxtoIgRRbUqqgW174x1zAA==",
   "emailFrom": "yabutjosepharnel@gmail.com",
   "smtpOptions": {
-    "host": "smtp.ethereal.email",
-    "port": 587,
+    "host": "smtp.gmail.com",
+    "port": 465,
+    "secure": true,
     "auth": {
       "user": "yabutjosepharnel@gmail.com",
       "pass": "ejlw ehmg cgws ddev"
