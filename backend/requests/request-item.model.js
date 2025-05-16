@@ -4,23 +4,36 @@ module.exports = model;
 
 function model(sequelize) {
     const attributes = {
-        name: { 
-            type: DataTypes.STRING, 
-            allowNull: false 
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
-        description: { 
-            type: DataTypes.TEXT, 
-            allowNull: true 
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false
         },
-        quantity: { 
-            type: DataTypes.INTEGER, 
-            allowNull: false, 
-            defaultValue: 1 
+        quantity: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1
+        },
+        created: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
+        },
+        updated: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
         }
     };
 
     const options = {
-        timestamps: false,
+        defaultScope: {
+            attributes: { exclude: [] }
+        }
     };
 
     return sequelize.define('requestItem', attributes, options);

@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: user-management-system
-    env: node
-    buildCommand: npm install
-    startCommand: node server.js
-    rootDirectory: ./

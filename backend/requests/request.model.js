@@ -4,37 +4,40 @@ module.exports = model;
 
 function model(sequelize) {
     const attributes = {
-        type: { 
-            type: DataTypes.STRING, 
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        type: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        status: {
+            type: DataTypes.STRING,
             allowNull: false,
-            validate: {
-                isIn: [['Equipment', 'Leave', 'Resources', 'Other']]
-            }
+            defaultValue: 'Pending'
         },
-        status: { 
-            type: DataTypes.STRING, 
+        created: {
+            type: DataTypes.DATE,
             allowNull: false,
-            defaultValue: 'Pending',
-            validate: {
-                isIn: [['Pending', 'Approved', 'Rejected']]
-            }
+            defaultValue: DataTypes.NOW
         },
-        comments: { 
-            type: DataTypes.TEXT, 
-            allowNull: true 
-        },
-        created: { 
-            type: DataTypes.DATE, 
-            allowNull: false, 
-            defaultValue: DataTypes.NOW 
-        },
-        updated: { 
-            type: DataTypes.DATE 
+        updated: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW
         }
     };
 
     const options = {
-        timestamps: false,
+        defaultScope: {
+            attributes: { exclude: [] }
+        },
+        scopes: {
+            // include hash with this scope
+            withHash: { attributes: {}, }
+        }
     };
 
     return sequelize.define('request', attributes, options);

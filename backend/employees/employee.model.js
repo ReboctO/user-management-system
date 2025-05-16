@@ -1,47 +1,39 @@
 const { DataTypes } = require('sequelize');
 
-module.exports = model;
+module.exports = (sequelize) => {
+  const Employee = sequelize.define('Employee', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    employeeId: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
+    },
+    position: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    hireDate: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM('Active', 'Inactive'),
+      allowNull: false,
+      defaultValue: 'Active'
+    }
+  }, {
+    timestamps: true
+  });
 
-function model(sequelize) {
-    const attributes = {
-        employeeId: { 
-            type: DataTypes.STRING, 
-            allowNull: false,
-            unique: true
-        },
-        position: { 
-            type: DataTypes.STRING, 
-            allowNull: false 
-        },
-        departmentId: {
-            type: DataTypes.INTEGER,
-            allowNull: true
-        },
-        hireDate: { 
-            type: DataTypes.DATE,
-            allowNull: false 
-        },
-        status: { 
-            type: DataTypes.STRING, 
-            allowNull: false,
-            defaultValue: 'Active',
-            validate: {
-                isIn: [['Active', 'On Leave', 'Terminated']]
-            }
-        },
-        created: { 
-            type: DataTypes.DATE, 
-            allowNull: false, 
-            defaultValue: DataTypes.NOW 
-        },
-        updated: { 
-            type: DataTypes.DATE 
-        }
-    };
+  Employee.associate = (models) => {
+    Employee.belongsTo(models.Account, { foreignKey: 'userId', as: 'user' });
+    Employee.belongsTo(models.Department, { foreignKey: 'departmentId', as: 'department' });
+    Employee.hasMany(models.Workflow, { foreignKey: 'employeeId', as: 'workflows' });
+  };
 
-    const options = {
-        timestamps: false,
-    };
-
-    return sequelize.define('employee', attributes, options);
-}
+  return Employee;
+};

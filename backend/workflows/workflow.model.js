@@ -1,41 +1,32 @@
 const { DataTypes } = require('sequelize');
 
-module.exports = model;
+module.exports = (sequelize) => {
+  const Workflow = sequelize.define('Workflow', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    type: {
+      type: DataTypes.ENUM('Onboarding', 'DepartmentChange', 'Termination'),
+      allowNull: false
+    },
+    status: {
+      type: DataTypes.ENUM('Pending', 'Approved', 'Rejected'),
+      allowNull: false,
+      defaultValue: 'Pending'
+    },
+    details: {
+      type: DataTypes.TEXT, //change to STRING
+      allowNull: true
+    }
+  }, {
+    timestamps: true
+  });
 
-function model(sequelize) {
-    const attributes = {
-        type: { 
-            type: DataTypes.STRING, 
-            allowNull: false,
-            validate: {
-                isIn: [['Onboarding', 'Transfer', 'Status Change', 'Termination']]
-            }
-        },
-        status: { 
-            type: DataTypes.STRING, 
-            allowNull: false,
-            defaultValue: 'Pending',
-            validate: {
-                isIn: [['Pending', 'Approved', 'Rejected']]
-            }
-        },
-        details: { 
-            type: DataTypes.JSON, 
-            allowNull: true 
-        },
-        created: { 
-            type: DataTypes.DATE, 
-            allowNull: false, 
-            defaultValue: DataTypes.NOW 
-        },
-        updated: { 
-            type: DataTypes.DATE 
-        }
-    };
+  Workflow.associate = (models) => {
+    Workflow.belongsTo(models.Employee, { foreignKey: 'employeeId', as: 'employee' });
+  };
 
-    const options = {
-        timestamps: false,
-    };
-
-    return sequelize.define('workflow', attributes, options);
-}
+  return Workflow;
+};
