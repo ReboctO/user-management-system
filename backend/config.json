@@ -2,11 +2,11 @@
     
     "database": {
         "host": "153.92.15.31",
-        "user": "u875409848_mendoza",
+        "user": "u875409848_yabut",
         "password": "9T2Z5$3UKkgSYzE",
-        "database": "u875409848_mendoza"
+        "database": "u875409848_yabut"
     },
-    "secret": "terces",
+    "secret": "planes",
     "emailFrom": "info@node-mysql-signup-verification-api.com",
     "smtpOptions": {
         "host": "smtp.ethereal.email",
