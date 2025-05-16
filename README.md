@@ -1,5 +1,5 @@
-##### Developer 1/Amama == Developer 2/Mahawan  
-##### Frontend Developer 1/Mahinay == Frontend Developer 2/Auman
+##### Backend Developer 1/== Locaylocay 2/  Yabut
+##### Frontend Developer 1/ == BonBon 2/ Ebarle
 
 ## User Management System API
 
