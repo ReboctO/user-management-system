@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://user-management-system-qjpt.onrender.com'
+  apiUrl: 'https://final-bonbon.onrender.com'
 };
 
 /*
