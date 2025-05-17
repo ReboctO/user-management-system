@@ -1,5 +1,3 @@
 # INTPROG FINAL
-for admin
-email: espinosaadmin@gmail.com
 
-pass: password
+cabantugan: https://final-intprog-cabs.vercel.app/
