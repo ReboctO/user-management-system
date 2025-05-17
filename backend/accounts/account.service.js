@@ -35,7 +35,11 @@ async function authenticate({ email, password, ipAddress }) {
         throw 'Password is incorrect';
     }
 
-    if (account.id !== 1) {
+    if (!account || account.status !== 'Active') {
+        throw 'Account is InActive. Please contact system administrator!';
+    }
+
+    /*if (account.id !== 1) {
         if (!account.isVerified) {
             throw 'Email is not verified';
         }
@@ -43,7 +47,7 @@ async function authenticate({ email, password, ipAddress }) {
         if (!account || account.status !== 'Active') {
             throw 'Account is InActive. Please contact system administrator!';
         }
-    }
+    }*/
 
     // authentication successful so generate jwt and refresh tokens
     const jwtToken = generateJwtToken(account);
@@ -260,11 +264,11 @@ function randomTokenString() {
 }
 
 function basicDetails(account) {
-    const { id, title, firstName, lastName, email, role, created, updated, isVerified, verificationToken, status } = account;
-    return { id, title, firstName, lastName, email, role, created, updated, isVerified, verificationToken, status };
+    const { id, title, firstName, lastName, email, role, created, updated,  verificationToken, status } = account;
+    return { id, title, firstName, lastName, email, role, created, updated,  verificationToken, status };
 }
 
-async function sendVerificationEmail(account, origin) {
+/*async function sendVerificationEmail(account, origin) {
     let message;
     if (origin) {
         const verifyUrl = `${origin}/account/verify-email?token=${account.verificationToken}`;
@@ -283,7 +287,7 @@ async function sendVerificationEmail(account, origin) {
                ${message}`
     });
 }
-
+*/
 async function sendAlreadyRegisteredEmail(email, origin) {
     let message;
     if (origin) {

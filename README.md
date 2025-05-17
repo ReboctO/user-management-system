@@ -1,3 +1,5 @@
 # INTPROG FINAL
+for admin
+email: espinosaadmin@gmail.com
 
-Yabut: https://intprog-final-frontend.vercel.app/
+pass: password
