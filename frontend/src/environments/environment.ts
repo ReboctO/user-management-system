@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://user-management-final-backend.onrender.com'
+  apiUrl: 'https://final-intprog-cabs.onrender.com'
 };
 
 /*
