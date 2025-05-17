@@ -1,20 +1,8 @@
 {
-    
-    "database": {
-        "host": "153.92.15.31",
-        "user": "u875409848_bonbon",
-        "password": "9T2Z5$3UKkgSYzE",
-        "database": "u875409848_bonbon"
-    },
-    "secret": "terces",
-    "emailFrom": "info@node-mysql-signup-verification-api.com",
-    "smtpOptions": {
-        "host": "smtp.ethereal.email",
-        "port": 587,
-        "secure": false,
-        "auth": {
-            "user": "jalyn.runolfsson48@ethereal.email",
-            "pass": "GZjjCrU7XQadaaHhPB"
-        }
-    }
+  "database": {
+    "host": "153.92.15.31",
+    "user": "u875409848_elocaylocay",
+    "password": "9T2Z5$3UKkgSYzE",
+    "database": "u875409848_elocaylocay"
+  }
 }
