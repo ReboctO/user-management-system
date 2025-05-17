@@ -29,5 +29,7 @@ app.use('/api-docs', require('_helpers/swagger'));
 app.use(errorHandler);
 
 // start server
-const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 4000;
-app.listen(port, () => console.log('http://localhost:' + port));
+const port = process.env.PORT || 4000; // Render uses PORT, ignore NODE_ENV
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
+});
