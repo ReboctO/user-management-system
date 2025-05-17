@@ -16,7 +16,7 @@ exports.config = {
     browserName: 'chrome'
   },
   directConnect: true,
-  baseUrl: 'https://final-bonbon.onrender.com',
+  baseUrl: 'https://intprog-final-backend.onrender.com',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,

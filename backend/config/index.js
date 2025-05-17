@@ -9,16 +9,6 @@ module.exports = {
     database: "u875409848_elocaylocay",
   },
   secret: "terces",
-  emailFrom: "info@node-mysql-signup-verification-api.com",
-  smtpOptions: {
-    host: "smtp.ethereal.email",
-    port: 587,
-    auth: {
-      user: "jalyn.runolfsson48@ethereal.email",
-      pass: "GZjjCrU7XQadaaHhPB",
-    },
-  },
-  isProduction: true,
 };
 
 // Then, in other files, use it like:

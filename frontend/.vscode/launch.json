@@ -7,7 +7,7 @@
       "type": "chrome",
       "request": "launch",
       "preLaunchTask": "npm: start",
-      "url": "https://final-bonbon.onrender.com"
+      "url": "https://intprog-full-stack-backend.onrender.com"
     },
     {
       "name": "ng test",

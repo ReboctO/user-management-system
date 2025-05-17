@@ -1,3 +1,3 @@
-# INTPROG FINAL
+# INTPROG FINAL PROJECT
 
-locaylocay erl jay user-management-system-4g821vmmn-erl-cays-projects.vercel.app
+LOCAYLOCAY : user-management-system-blue-seven.vercel.app

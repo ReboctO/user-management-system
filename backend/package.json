@@ -5,7 +5,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/cornflourblue/node-mysql-signup-verification-api.git"
+        "url": "https://github.com/ReboctO/user-management-system.git"
     },
     "scripts": {
         "start": "node ./server.js",
