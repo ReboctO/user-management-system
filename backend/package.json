@@ -8,8 +8,8 @@
     "url": "https://github.com/cornflourblue/node-mysql-signup-verification-api.git"
   },
   "scripts": {
-    "start": "node ./server.js",
-    "start:dev": "nodemon ./server.js",
+    "start": "node backend/server.js",
+    "start:dev": "nodemon backend/server.js",
     "build": "cd frontend/angular && npm install && npm run build"
   },
   "dependencies": {
