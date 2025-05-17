@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
-import { AccountService } from '../_services';
+﻿import { Component } from '@angular/core';
 
-@Component({ templateUrl: 'home.component.html' })
+import { AccountService } from '@app/_services';
+
+@Component({
+    templateUrl: 'home.component.html',
+    standalone: false
+})
 export class HomeComponent {
-    account: any;
+    account = this.accountService.accountValue;
 
-    constructor(private accountService: AccountService) { 
-        // Ensure account has a fallback if it's undefined or null
-        this.account = this.accountService.accountValue || { firstName: 'Guest' };
-    }
+    constructor(private accountService: AccountService) { }
 }

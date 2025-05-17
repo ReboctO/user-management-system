@@ -22,10 +22,9 @@ function model(sequelize) {
     };
 
     const options = {
-        
         // disable default timestamp fields (createdAt and updatedAt)
-        
         timestamps: false
-    }
-        return sequelize.define('refreshToken', attributes, options);
-    }
+    };
+
+    return sequelize.define('refreshToken', attributes, options);
+}

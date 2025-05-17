@@ -21,12 +21,13 @@ function model(sequelize) {
         isVerified: {
             type: DataTypes.VIRTUAL,
             get() { return !!(this.verified || this.passwordReset); }
-        }
+        },
+        status: { type: DataTypes.STRING, allowNull: false }
     };
 
     const options = {
         // disable default timestamp fields (createdAt and updatedAt)
-        timestamps: false,
+        timestamps: false, 
         defaultScope: {
             // exclude password hash by default
             attributes: { exclude: ['passwordHash'] }
@@ -34,7 +35,7 @@ function model(sequelize) {
         scopes: {
             // include hash with this scope
             withHash: { attributes: {}, }
-        }
+        }        
     };
 
     return sequelize.define('account', attributes, options);
