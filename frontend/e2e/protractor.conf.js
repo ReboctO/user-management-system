@@ -16,7 +16,7 @@ exports.config = {
     browserName: 'chrome'
   },
   directConnect: true,
-  baseUrl: 'https://user-management-system-1456.onrender.com',
+  baseUrl: 'https://user-management-system-ah8u.onrender.com',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,

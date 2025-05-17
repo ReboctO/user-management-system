@@ -109,11 +109,11 @@ function verifyEmailSchema(req, res, next) {
     validateRequest(req, next, schema);
 }
 
-function verifyEmail(req, res, next) {
+/*function verifyEmail(req, res, next) {
     accountService.verifyEmail(req.body)
         .then(() => res.json({ message: 'Verification successful, you can now login' }))
         .catch(next);
-}
+}*/
 
 function forgotPasswordSchema(req, res, next) {
     const schema = Joi.object({

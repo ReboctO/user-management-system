@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://user-management-system-1456.onrender.com'
+  apiUrl: 'https://user-management-system-ah8u.onrender.com'
 };
